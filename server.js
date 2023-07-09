@@ -46,115 +46,120 @@ io.on("connection", (socket) => {
   
   socket.on("userJoined", ({ userid,type }) => {
     
+   try {
     console.log("jee", userid);
 
-   if(userid==null){
-    return;
-   }
-console.log(userid,type);
-   if(type=="video"){
-    connectedUsers.push({
-      userid: userid,
-      available: true,
-      room: null,
-    });
-    pair.set(userid,"video")
-    io.emit("videoChatCount",{length:connectedUsers.length});
-    if (connectedUsers.length >= 2) {
-      const usersArray = Array.from(connectedUsers);
-      const excludeme = usersArray.filter(
-        (user) => user.userid !== userid && user.available === true
-      );
-
-      if (excludeme.length > 0) {
-        const randomIndex1 = Math.floor(Math.random() * excludeme.length);
-
-        const user1 = excludeme[randomIndex1].userid;
-        const user2 = userid;
-        const room = `room-${user1}-${user2}`;
-
-  
-        const updateConnectedUser = (userid, updatedAvailable, updatedRoom) => {
-          connectedUsers = connectedUsers.map((user) => {
-            if (user.userid === userid) {
-              return {
-                ...user,
-                available: updatedAvailable,
-                room: updatedRoom,
-              };
-            }
-            return user;
-          });
-        };
-
-
-        updateConnectedUser(user1,false,room);
-        updateConnectedUser(user2,false,room);
-        
-        socket.join(room);
-        io.to(user1).emit("roomCreated", {
-        roomName: room,
-        remoteUser: user2,
-      });
-      io.to(user2).emit("roomCreated", {
-        roomName: room,
-        remoteUser: user1,
-        createPermission: true,
-      });
-      }
-
-      
+    if(userid==null){
+     return;
     }
-   }else{
-    textChatUsers.push({
-      userid: userid,
-      available: true,
-      room: null,
-    });
-    pair.set(userid,"text");
-    io.emit("textChatCount",{length:textChatUsers.length});
-
-    if (textChatUsers.length >= 2) {
-      const usersArray = Array.from(textChatUsers);
-      const excludeme = usersArray.filter(
-        (user) => user.userid !== userid && user.available === true
-      );
-
-      if (excludeme.length > 0) {
-        const randomIndex1 = Math.floor(Math.random() * excludeme.length);
-
-        const user1 = excludeme[randomIndex1].userid;
-        const user2 = userid;
-        const room = `room-${user1}-${user2}`;
-        updateTextChatUsers(user1,false,room);
-        updateTextChatUsers(user2,false,room);
-        
-        socket.join(room);
-        io.to(user1).emit("roomCreated", {
-        roomName: room,
-        remoteUser: user2,
-      });
-      io.to(user2).emit("roomCreated", {
-        roomName: room,
-        remoteUser: user1,
-        createPermission: true,
-      });
-      }
-
-      
-    }
-   }
-    
-    // console.log(connectedUsers);
+ console.log(userid,type);
+    if(type=="video"){
+     connectedUsers.push({
+       userid: userid,
+       available: true,
+       room: null,
+     });
+     pair.set(userid,"video")
+     io.emit("videoChatCount",{length:connectedUsers.length});
+     if (connectedUsers.length >= 2) {
+       const usersArray = Array.from(connectedUsers);
+       const excludeme = usersArray.filter(
+         (user) => user.userid !== userid && user.available === true
+       );
+ 
+       if (excludeme.length > 0) {
+         const randomIndex1 = Math.floor(Math.random() * excludeme.length);
+ 
+         const user1 = excludeme[randomIndex1].userid;
+         const user2 = userid;
+         const room = `room-${user1}-${user2}`;
+ 
    
-
-    // Check if there are at least two users connected
+         const updateConnectedUser = (userid, updatedAvailable, updatedRoom) => {
+           connectedUsers = connectedUsers.map((user) => {
+             if (user.userid === userid) {
+               return {
+                 ...user,
+                 available: updatedAvailable,
+                 room: updatedRoom,
+               };
+             }
+             return user;
+           });
+         };
+ 
+ 
+         updateConnectedUser(user1,false,room);
+         updateConnectedUser(user2,false,room);
+         
+         socket.join(room);
+         io.to(user1).emit("roomCreated", {
+         roomName: room,
+         remoteUser: user2,
+       });
+       io.to(user2).emit("roomCreated", {
+         roomName: room,
+         remoteUser: user1,
+         createPermission: true,
+       });
+       }
+ 
+       
+     }
+    }else{
+     textChatUsers.push({
+       userid: userid,
+       available: true,
+       room: null,
+     });
+     pair.set(userid,"text");
+     io.emit("textChatCount",{length:textChatUsers.length});
+ 
+     if (textChatUsers.length >= 2) {
+       const usersArray = Array.from(textChatUsers);
+       const excludeme = usersArray.filter(
+         (user) => user.userid !== userid && user.available === true
+       );
+ 
+       if (excludeme.length > 0) {
+         const randomIndex1 = Math.floor(Math.random() * excludeme.length);
+ 
+         const user1 = excludeme[randomIndex1].userid;
+         const user2 = userid;
+         const room = `room-${user1}-${user2}`;
+         updateTextChatUsers(user1,false,room);
+         updateTextChatUsers(user2,false,room);
+         
+         socket.join(room);
+         io.to(user1).emit("roomCreated", {
+         roomName: room,
+         remoteUser: user2,
+       });
+       io.to(user2).emit("roomCreated", {
+         roomName: room,
+         remoteUser: user1,
+         createPermission: true,
+       });
+       }
+ 
+       
+     }
+    }
+     
+     // console.log(connectedUsers);
+    
+ 
+     // Check if there are at least two users connected
+   } catch (error) {
+    console.log("error",error);
+   }
     
   });
  
 
   socket.on("newUser",({remoteUserId,currentUserId,type})=>{
-console.log("rremoUsre",remoteUserId,"currentUserid",currentUserId);
+try {
+  console.log("rremoUsre",remoteUserId,"currentUserid",currentUserId);
 if(currentUserId==null){
   return;
 }
@@ -293,6 +298,9 @@ if(type=="video"){
     
 
 
+} catch (error) {
+  console.log("error",error);
+}
   })
 
   // socket.on("peer:nego:needed",(data)=>{
@@ -337,6 +345,7 @@ if(type=="video"){
   // });
 
   socket.on("disconnect", () => {
+   try {
     const roomType = pair.get(socket.id);
     if(roomType==undefined){
       return;
@@ -393,6 +402,9 @@ if(roomType=="video"){
   // console.log(findUser);
   // console.log(leavinguser,connectedUsers,textChatUsers);
 
+   } catch (error) {
+    console.log("error",error);
+   }
 });
 });
 
